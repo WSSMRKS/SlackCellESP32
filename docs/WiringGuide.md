@@ -33,3 +33,10 @@
 | MISO    | 27      |                                                                                                |
 | VCC     | 5V      | Some need 3.3V, test specific models                                                           |
 | GND     | GND     |                                                                                                |
+
+| HX711 | Heltec V3 | Description                                  |
+| ----- | --------- | -------------------------------------------- |
+| GND   | GND       |                                              |
+| DT    | 41        |                                              |
+| SCK   | 40        |                                              |
+| VCC   | 5V        |                                              |
