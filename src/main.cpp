@@ -64,6 +64,7 @@ unsigned long timestamp = 0;
 long maxForce = 0;
 long force = -1;
 long reading = -1;
+long maxN = 0;
 long avg_reading = 0;
 long prevForce = -100;
 long prevMaxForce = -100;
@@ -102,40 +103,40 @@ void setup() {
   display_active_btn.attachLongPressStart(resetMaxForce);
 #endif
 
-  displayInit();
 
-  loadcell.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  loadcell.set_offset(LOADCELL_OFFSET);
-  loadcell.set_scale(LOADCELL_DIVIDER_N);
-  force = loadcell.get_units(TARE_AVERAGE_TIME);
-  if (force < MAX_TARE_VALUE) {
-    loadcell.tare();
+loadcell.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+loadcell.set_offset(LOADCELL_OFFSET);
+loadcell.set_scale(LOADCELL_DIVIDER_N);
+force = loadcell.get_units(TARE_AVERAGE_TIME);
+if (force < MAX_TARE_VALUE) {
+	loadcell.tare();
     force = 0;
-  }
+}
 
-  queue = xQueueCreate(2, sizeof(long));
+queue = xQueueCreate(2, sizeof(long));
 
-  if(queue == NULL){
-    Serial.println("Error creating the queue");
-  }
+if(queue == NULL){
+	Serial.println("Error creating the queue");
+}
 
-  xTaskCreatePinnedToCore(
-    Display, /* Function to implement the task */
+xTaskCreatePinnedToCore(
+	Display, /* Function to implement the task */
     "DisplayTask", /* Name of the task */
     10000,  /* Stack size in words */
     NULL,  /* Task input parameter */
     0,  /* Priority of the task */
     &DisplayTask,  /* Task handle. */
     0); /* Core where the task should run */
-
-  sdMessage.reserve(SD_MESSAGE_LENGTH);
-
+	
+	sdMessage.reserve(SD_MESSAGE_LENGTH);
+	
   //This might seem like a unnecessary start up delay, just to see "Slack Cell" longer...
   //but it also stabilizes the signal levels to not have multiple kilos of maxForce just from booting up...
   //and gives the SD card time to initialize
   delay(SD_START_DELAY);
   init_sd();
-
+  displayInit(sd_ready);
+  
   displayClearBuffer();
 }
 
@@ -216,7 +217,10 @@ void loop() {
 #endif
 
     }
-    Serial.printf("Reading: %ld N\n", abs(reading));
+	Serial.printf("Reading: %ld N\n", abs(reading));
+	// if (abs(reading) > maxN)
+	// 	maxN = abs(reading);
+	// Serial.printf("Max: %ld N\n", maxN);
     if(sd_ready && recording){
       writeSD(readingID, timeNow, reading);
     }

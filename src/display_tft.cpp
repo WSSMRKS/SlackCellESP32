@@ -30,7 +30,7 @@ void displayMaxForce(long force) {
   tft.printf("%ld", force);
 }
 
-void displayInit(){
+void displayInit(bool sd_ready){
   tft.init();
   tft.setRotation(1); // horizontal layout
   tft.fillScreen(TFT_BLACK);

@@ -5,6 +5,7 @@
 
 #include "display.h"
 #include "pins.h"
+#include "icons.h"
 #include "U8g2lib.h" //library for OLED
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C   u8g2(U8G2_R2, OLED_RESET_PIN, OLED_CLOCK_PIN, OLED_DATA_PIN); //setup display connection
@@ -33,7 +34,7 @@ void displayMaxForce(long force) {
   displayNdigits(force, 36, 6);
 }
 
-void displayInit(){
+void displayInit(bool sd_ready){
   u8g2.setBusClock(1000000);
   u8g2.begin();
   u8g2.setPowerSave(0);
@@ -42,8 +43,16 @@ void displayInit(){
 
 
   u8g2.clearBuffer();
-  u8g2.drawStr(0, 0, "SLACK");
-  u8g2.drawStr(0, 36, "CELL");
+  u8g2.drawStr(0, 0, " Slack-");
+  u8g2.drawStr(0, 36, "  Cell");
+//   u8g2.drawXBMP(0, 0, 16, 16, epd_bitmap_icons8_micro_sd_16);
+//   u8g2.drawXBMP(25, 0, 16, 16, epd_bitmap_icons8_x_16);
+// 16 px wide -> 2 bytes per row; 16 px tall
+  if(sd_ready == true)
+  	u8g2.drawBitmap(0,  0, 2, 16, epd_bitmap_icons8_micro_sd_16);
+  else
+    u8g2.drawBitmap(0, 0, 2, 16, epd_bitmap_icons8_x_16);
+
   u8g2.sendBuffer();
 }
 
