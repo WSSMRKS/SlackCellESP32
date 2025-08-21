@@ -8,6 +8,7 @@
 #include "icons.h"
 #include "U8g2lib.h" //library for OLED
 
+extern bool sd_ready;
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C   u8g2(U8G2_R2, OLED_RESET_PIN, OLED_CLOCK_PIN, OLED_DATA_PIN); //setup display connection
 
 //number: number to display
@@ -23,6 +24,10 @@ void displayNdigits(long number,  uint8_t line, uint8_t maxLength){
     bufferLCD[maxLength - strlen(bufferF) + i] = bufferF[i];
   }
   u8g2.drawStr(0, line, bufferLCD);
+  if(sd_ready == true)
+  	u8g2.drawBitmap(0,  0, 2, 16, epd_bitmap_icons8_micro_sd_16);
+  else
+    u8g2.drawBitmap(0, 0, 2, 16, epd_bitmap_icons8_x_16);
   u8g2.sendBuffer();
 }
 
@@ -34,7 +39,7 @@ void displayMaxForce(long force) {
   displayNdigits(force, 36, 6);
 }
 
-void displayInit(bool sd_ready){
+void displayInit(){
   u8g2.setBusClock(1000000);
   u8g2.begin();
   u8g2.setPowerSave(0);

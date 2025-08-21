@@ -69,6 +69,8 @@ long avg_reading = 0;
 long prevForce = -100;
 long prevMaxForce = -100;
 
+bool cardGone = false;
+
 // TODO: should be selectable with buttons, maybe a small menu?
 bool recording = true;
 // Set in init_sd, signals readiness to use the data.txt file on the sd.
@@ -135,7 +137,7 @@ xTaskCreatePinnedToCore(
   //and gives the SD card time to initialize
   delay(SD_START_DELAY);
   init_sd();
-  displayInit(sd_ready);
+  displayInit();
   
   displayClearBuffer();
 }
@@ -218,9 +220,15 @@ void loop() {
 
     }
 	Serial.printf("Reading: %ld N\n", abs(reading));
-	// if (abs(reading) > maxN)
-	// 	maxN = abs(reading);
-	// Serial.printf("Max: %ld N\n", maxN);
+	if (SD.cardType() == CARD_NONE && cardGone == false) {
+	Serial.println("SD card lost or removed!");
+	cardGone = true;
+	sd_ready = false;
+	}
+	else if(cardGone == true && SD.cardType() != CARD_NONE) {
+		Serial.println("SD card lost or removed!");
+		sd_ready = true;
+	}
     if(sd_ready && recording){
       writeSD(readingID, timeNow, reading);
     }

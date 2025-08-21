@@ -8,7 +8,7 @@ This header defines the abstract interface for the display functions we need. Th
 
 void displayForce(long force);
 void displayMaxForce(long force);
-void displayInit(bool sd_ready);
+void displayInit();
 void displayClearBuffer();
 
 
